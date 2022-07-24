@@ -1,7 +1,18 @@
+const crypto = require("crypto");
 const express = require("express");
 const multer = require("multer");
+const path = require("path");
 
-const upload = multer({ dest: "user-images" });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      return cb(null, "user-images");
+    },
+    filename: function (req, file, cb) {
+      return cb(null, crypto.randomUUID() + path.extname(file.originalname));
+    },
+  }),
+});
 const router = express.Router();
 
 router.get("/", function (req, res) {
