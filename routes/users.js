@@ -3,6 +3,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 
+const db = require("../data/database");
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -19,12 +21,14 @@ router.get("/", function (req, res) {
   res.render("profiles");
 });
 
-router.post("/profiles", upload.single("image"), function (req, res) {
+router.post("/profiles", upload.single("image"), async function (req, res) {
   const uploadedImageFile = req.file;
   const userName = req.body.username;
 
-  console.log(userName);
-  console.log(uploadedImageFile);
+  db.getDb().collection("users").insertOne({
+    name: userName,
+    imagePath: uploadedImageFile.path,
+  });
 
   res.redirect("/");
 });
